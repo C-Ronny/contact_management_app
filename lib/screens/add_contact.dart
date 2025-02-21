@@ -94,7 +94,7 @@ class _AddContactState extends State<AddContact> {
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value!.isEmpty) return "Phone number is required";
-                  if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                  if (!RegExp(r'^0\d{9}$').hasMatch(value)) {
                     return "Enter a valid 10-digit phone number";
                   }
                   return null;
