@@ -37,9 +37,9 @@ class _AddContactState extends State<AddContact> {
 
   /// Show a message as a SnackBar
   void _showMessage(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: color),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   /// Clear the form after successful submission
@@ -78,7 +78,8 @@ class _AddContactState extends State<AddContact> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                validator: (value) => value!.isEmpty ? "Name is required" : null,
+                validator:
+                    (value) => value!.isEmpty ? "Name is required" : null,
               ),
               const SizedBox(height: 15),
               TextFormField(
@@ -93,7 +94,7 @@ class _AddContactState extends State<AddContact> {
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value!.isEmpty) return "Phone number is required";
-                  if (!RegExp(r'^\d{10}\$').hasMatch(value)) {
+                  if (!RegExp(r'^\d{10}$').hasMatch(value)) {
                     return "Enter a valid 10-digit phone number";
                   }
                   return null;
@@ -110,9 +111,15 @@ class _AddContactState extends State<AddContact> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: isSubmitting
-                      ? const CircularProgressIndicator(color: Colors.blueAccent)
-                      : const Text("Add Contact", style: TextStyle(fontSize: 16)),
+                  child:
+                      isSubmitting
+                          ? const CircularProgressIndicator(
+                            color: Colors.blueAccent,
+                          )
+                          : const Text(
+                            "Add Contact",
+                            style: TextStyle(fontSize: 16),
+                          ),
                 ),
               ),
             ],
