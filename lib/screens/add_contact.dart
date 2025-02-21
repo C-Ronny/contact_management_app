@@ -51,37 +51,69 @@ class _AddContactState extends State<AddContact> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Contact")),
-      body: Padding(
+      appBar: AppBar(
+        title: const Text("Add Contact"),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                "Enter Contact Details",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 15),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: "Name"),
+                decoration: InputDecoration(
+                  labelText: "Name",
+                  prefixIcon: const Icon(Icons.person),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 validator: (value) => value!.isEmpty ? "Name is required" : null,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: "Phone Number"),
+                decoration: InputDecoration(
+                  labelText: "Phone Number",
+                  prefixIcon: const Icon(Icons.phone),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value!.isEmpty) return "Phone number is required";
-                  if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                  if (!RegExp(r'^\d{10}\$').hasMatch(value)) {
                     return "Enter a valid 10-digit phone number";
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isSubmitting ? null : _submitForm,
-                child: isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Add Contact"),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isSubmitting ? null : _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: isSubmitting
+                      ? const CircularProgressIndicator(color: Colors.blueAccent)
+                      : const Text("Add Contact", style: TextStyle(fontSize: 16)),
+                ),
               ),
             ],
           ),

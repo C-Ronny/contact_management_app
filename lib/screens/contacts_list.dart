@@ -53,12 +53,18 @@ class _ContactsListState extends State<ContactsList> {
     bool success = await ContactService.deleteContact(contactId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Contact deleted successfully")),
+        SnackBar(
+          content: const Text("Contact deleted successfully"),
+          backgroundColor: Colors.green,
+        ),
       );
       fetchContacts(); // Refresh list
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to delete contact")),
+        SnackBar(
+          content: const Text("Failed to delete contact"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -66,50 +72,100 @@ class _ContactsListState extends State<ContactsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Contacts")),
+      appBar: AppBar(
+        title: const Text("Contacts"), 
+        centerTitle: true, 
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
+      ), 
       body: RefreshIndicator(
         onRefresh: fetchContacts,
         child: isLoading
             ? const Center(child: CircularProgressIndicator()) // Loading state
             : errorMessage != null
-                ? Center(child: Text(errorMessage!)) // Error state
-                : ListView.builder(
-                    itemCount: contacts?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      var contact = contacts![index];
-                      return ListTile(
-                        leading: CircleAvatar(child: Text(contact['pname'][0])),
-                        title: Text(contact['pname']),
-                        subtitle: Text(contact['pphone']),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditContact(contactId: contact['pid']),
-                                  ),
-                                );
-                                fetchContacts(); // Refresh after edit
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => deleteContact(contact['pid']),
-                            ),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error, color: Colors.red, size: 50),
+                        const SizedBox(height: 10),
+                        Text(errorMessage!, style: const TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  )
+                : contacts!.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "No contacts available.\nTap + to add one!",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
                         ),
-                      );
-                    },
-                  ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: contacts?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          var contact = contacts![index];
+                          return Dismissible(
+                            key: Key(contact['pid'].toString()),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: const Icon(Icons.delete, color: Colors.white),
+                            ),
+                            onDismissed: (direction) {
+                              deleteContact(contact['pid']);
+                            },
+                            child: Card(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              elevation: 2,
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.blueAccent,
+                                  child: Text(
+                                    contact['pname'][0].toUpperCase(),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                                ),
+                                title: Text(
+                                  contact['pname'],
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                subtitle: Text(
+                                  contact['pphone'],
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.edit, color: Colors.blue),
+                                      onPressed: () async {
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => EditContact(contactId: contact['pid']),
+                                          ),
+                                        );
+                                        fetchContacts(); // Refresh after edit
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () => deleteContact(contact['pid']),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: fetchContacts, // Refresh list on button tap
-        child: const Icon(Icons.refresh),
-      ),
+      
     );
   }
 }
